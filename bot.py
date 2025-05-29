@@ -1,8 +1,10 @@
 from flask import Flask, request
 import requests
+import os
 
 app = Flask(__name__)
 
+# Tu token de bot de Telegram
 TOKEN = "7270327815:AAFA21sujNji42HkWHAWfETYF9MFYwDOKEY"
 
 @app.route(f'/{TOKEN}', methods=['POST'])
@@ -15,19 +17,24 @@ def webhook():
         text = data["message"].get("text", "")
 
         if text == "/start":
-            reply = (
-                f"👋 Hola {first_name}!\n\n"
+            mensaje = (
+                f"👋 ¡Hola {first_name}!\n\n"
                 f"Este es tu chat ID de Telegram:\n\n"
                 f"👉 {chat_id}\n\n"
-                f"Cópialo y pégalo en el formulario web para recibir confirmación."
+                f"Cópialo y pégalo en el formulario web para recibir confirmación automática."
             )
 
-            # Enviar el mensaje al usuario
             url = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
             payload = {
                 "chat_id": chat_id,
-                "text": reply
+                "text": mensaje
             }
             requests.post(url, json=payload)
 
     return "ok"
+
+if __name__ == '__main__':
+    # Importante: Render usa una variable de entorno llamada PORT
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host='0.0.0.0', port=port)
+
